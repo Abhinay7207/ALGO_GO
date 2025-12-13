@@ -7,7 +7,6 @@ import { ArrowLeft, Calendar, Clock, User, Heart, Share2, Loader2 } from 'lucide
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabaseClient';
 import { blogs as staticBlogs } from '../data/blogs';
 import { preprocessBlogContent } from '../lib/blogUtils';
 import MultiLangCodeBlock from '../components/MultiLangCodeBlock';
@@ -32,7 +31,6 @@ const BlogPost = () => {
     const [blog, setBlog] = useState<BlogData | null>(null);
     const [loading, setLoading] = useState(true);
     const [isLiked, setIsLiked] = useState(false);
-    const [isStaticBlog, setIsStaticBlog] = useState(false);
 
     useEffect(() => {
         fetchBlog();
@@ -42,11 +40,11 @@ const BlogPost = () => {
 
     const fetchBlog = async () => {
         try {
-            // First check if it's a static blog
+            // Find the static blog
             const staticBlog = staticBlogs.find(b => b.id === id);
 
             if (staticBlog) {
-                // It's a static blog
+                // Load likes from localStorage
                 const storedLikes = localStorage.getItem(`blog_likes_${id}`);
                 setBlog({
                     ...staticBlog,
@@ -57,25 +55,6 @@ const BlogPost = () => {
                     date: staticBlog.date,
                     content: preprocessBlogContent(staticBlog.content)
                 } as BlogData);
-                setIsStaticBlog(true);
-            } else {
-                // Try to fetch from Supabase
-                const { data, error } = await supabase
-                    .from('blogs')
-                    .select(`
-                        *,
-                        author:profiles(full_name)
-                    `)
-                    .eq('id', id)
-                    .single();
-
-                if (error) throw error;
-                if (error) throw error;
-                setBlog({
-                    ...data,
-                    content: preprocessBlogContent(data.content)
-                });
-                setIsStaticBlog(false);
             }
         } catch (error) {
             console.error('Error fetching blog:', error);
@@ -93,18 +72,9 @@ const BlogPost = () => {
         setIsLiked(newLiked);
         setBlog({ ...blog, likes: newLikes });
 
+        // Save to localStorage
         localStorage.setItem(`blog_liked_${id}`, newLiked.toString());
-
-        if (isStaticBlog) {
-            // For static blogs, just save to localStorage
-            localStorage.setItem(`blog_likes_${id}`, newLikes.toString());
-        } else {
-            // For dynamic blogs, update Supabase
-            await supabase
-                .from('blogs')
-                .update({ likes: newLikes })
-                .eq('id', id);
-        }
+        localStorage.setItem(`blog_likes_${id}`, newLikes.toString());
     };
 
     const handleShare = async () => {

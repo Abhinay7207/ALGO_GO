@@ -1,56 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Search } from 'lucide-react';
 import Hero from '../components/Hero';
 import ContentGrid from '../components/ContentGrid';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { supabase } from '../lib/supabaseClient';
 import { blogs as staticBlogs } from '../data/blogs';
 
-interface Blog {
-    id: string;
-    title: string;
-    description: string;
-    tags: string[];
-    type: 'blog' | 'course';
-}
-
 const Home = () => {
-    const [dynamicBlogs, setDynamicBlogs] = useState<Blog[]>([]);
-    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-        fetchBlogs();
-    }, []);
-
-    const fetchBlogs = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('blogs')
-                .select('id, title, description, tags')
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-
-            const formattedBlogs: Blog[] = (data || []).map(blog => ({
-                id: blog.id,
-                title: blog.title,
-                description: blog.description || '',
-                tags: blog.tags || [],
-                type: 'blog' as const,
-            }));
-
-            setDynamicBlogs(formattedBlogs);
-        } catch (error) {
-            console.error('Error fetching blogs:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Merge static blogs with dynamic blogs from Supabase
-    const allBlogs = [...staticBlogs, ...dynamicBlogs];
+    // Use static blogs only
+    const allBlogs = staticBlogs;
 
     const filteredBlogs = allBlogs.filter(blog =>
         blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -76,13 +36,7 @@ const Home = () => {
                 </div>
             </div>
 
-            {loading ? (
-                <div className="py-20 text-center">
-                    <p className="text-gray-600">Loading blogs...</p>
-                </div>
-            ) : (
-                <ContentGrid title={searchQuery ? "Search Results" : "Latest Blogs"} items={filteredBlogs} />
-            )}
+            <ContentGrid title={searchQuery ? "Search Results" : "Latest Blogs"} items={filteredBlogs} />
             <section className="bg-primary/5 py-20">
                 <div className="max-w-4xl mx-auto px-4 text-center">
                     <h2 className="text-3xl font-bold text-gray-900 mb-6">Ready to start writing?</h2>
