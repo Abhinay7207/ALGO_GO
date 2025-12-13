@@ -180,6 +180,14 @@ Find the maximum sum of a subarray of size \`k\`
 
 **Brute Force (Wrong Way)**
 
+<!-- MULTILANG_START -->
+\`\`\`python
+for i in range(n - k + 1):
+    sum_val = 0
+    for j in range(i, i + k):
+        sum_val += arr[j]
+\`\`\`
+<!-- LANG_DIVIDER -->
 \`\`\`java
 for (int i = 0; i <= n - k; i++) {
     int sum = 0;
@@ -188,26 +196,75 @@ for (int i = 0; i <= n - k; i++) {
     }
 }
 \`\`\`
+<!-- LANG_DIVIDER -->
+\`\`\`cpp
+for (int i = 0; i <= n - k; i++) {
+    int sum = 0;
+    for (int j = i; j < i + k; j++) {
+        sum += arr[j];
+    }
+}
+\`\`\`
+<!-- MULTILANG_END -->
 
 ⛔ O(n²)
 
 **Optimized Sliding Window (Correct Way)**
 
+<!-- MULTILANG_START -->
+\`\`\`python
+max_sum = 0
+window_sum = 0
+
+# Calculate sum of first window
+for i in range(k):
+    window_sum += arr[i]
+
+max_sum = window_sum
+
+# Slide the window
+for i in range(k, len(arr)):
+    window_sum += arr[i]      # add next element
+    window_sum -= arr[i - k]  # remove first element
+    max_sum = max(max_sum, window_sum)
+\`\`\`
+<!-- LANG_DIVIDER -->
 \`\`\`java
 int maxSum = 0, windowSum = 0;
 
+// Calculate sum of first window
 for (int i = 0; i < k; i++) {
     windowSum += arr[i];
 }
 
 maxSum = windowSum;
 
+// Slide the window
 for (int i = k; i < arr.length; i++) {
     windowSum += arr[i];      // add next element
     windowSum -= arr[i - k];  // remove first element
     maxSum = Math.max(maxSum, windowSum);
 }
 \`\`\`
+<!-- LANG_DIVIDER -->
+\`\`\`cpp
+int maxSum = 0, windowSum = 0;
+
+// Calculate sum of first window
+for (int i = 0; i < k; i++) {
+    windowSum += arr[i];
+}
+
+maxSum = windowSum;
+
+// Slide the window
+for (int i = k; i < n; i++) {
+    windowSum += arr[i];      // add next element
+    windowSum -= arr[i - k];  // remove first element
+    maxSum = max(maxSum, windowSum);
+}
+\`\`\`
+<!-- MULTILANG_END -->
 
 ✅ O(n)  
 ✅ No repeated computation
@@ -229,20 +286,50 @@ for (int i = k; i < arr.length; i++) {
 
 **Core Pattern (Very Important)**
 
+<!-- MULTILANG_START -->
+\`\`\`python
+left = 0
+
+for right in range(n):
+    # expand window (include right)
+    
+    while condition_is_violated:
+        # shrink window (exclude left)
+        left += 1
+    
+    # update answer
+\`\`\`
+<!-- LANG_DIVIDER -->
 \`\`\`java
 int left = 0;
 
 for (int right = 0; right < n; right++) {
     // expand window (include right)
-
+    
     while (condition is violated) {
         // shrink window (exclude left)
         left++;
     }
-
+    
     // update answer
 }
 \`\`\`
+<!-- LANG_DIVIDER -->
+\`\`\`cpp
+int left = 0;
+
+for (int right = 0; right < n; right++) {
+    // expand window (include right)
+    
+    while (condition is violated) {
+        // shrink window (exclude left)
+        left++;
+    }
+    
+    // update answer
+}
+\`\`\`
+<!-- MULTILANG_END -->
 
 **Memorize this.**  
 Most sliding window problems follow this structure.
@@ -263,6 +350,23 @@ Given a string, find the length of the longest substring without repeating chara
 
 **Code**
 
+<!-- MULTILANG_START -->
+\`\`\`python
+from collections import deque
+
+char_set = set()
+left = 0
+max_len = 0
+
+for right in range(len(s)):
+    while s[right] in char_set:
+        char_set.remove(s[left])
+        left += 1
+    
+    char_set.add(s[right])
+    max_len = max(max_len, right - left + 1)
+\`\`\`
+<!-- LANG_DIVIDER -->
 \`\`\`java
 Set<Character> set = new HashSet<>();
 int left = 0, maxLen = 0;
@@ -276,6 +380,25 @@ for (int right = 0; right < s.length(); right++) {
     maxLen = Math.max(maxLen, right - left + 1);
 }
 \`\`\`
+<!-- LANG_DIVIDER -->
+\`\`\`cpp
+#include <unordered_set>
+#include <string>
+#include <algorithm>
+
+unordered_set<char> charSet;
+int left = 0, maxLen = 0;
+
+for (int right = 0; right < s.length(); right++) {
+    while (charSet.find(s[right]) != charSet.end()) {
+        charSet.erase(s[left]);
+        left++;
+    }
+    charSet.insert(s[right]);
+    maxLen = max(maxLen, right - left + 1);
+}
+\`\`\`
+<!-- MULTILANG_END -->
 
 ✅ Linear time  
 ✅ Clean logic  
