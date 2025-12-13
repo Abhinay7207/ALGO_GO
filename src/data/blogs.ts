@@ -114,76 +114,236 @@ In a profession built on logic, it’s time we bring that logic to how we speak.
     {
         id: '1',
         title: 'Mastering the Sliding Window Technique',
-        description: 'The sliding window technique is a powerful algorithmic pattern used to solve problems involving arrays or strings.',
+        description: 'A developer\'s guide to writing faster, cleaner, and smarter algorithms',
         type: 'blog',
         tags: ['Algorithms', 'Sliding Window', 'DSA', 'Efficiency'],
         date: 'Oct 24, 2023',
-        readTime: '8 min read',
+        readTime: '12 min read',
         author: 'AlgoExpert',
         content: `
+# Mastering the Sliding Window Technique
+
+**A developer's guide to writing faster, cleaner, and smarter algorithms**
+
 ## Introduction
-The Sliding Window technique is an optimization pattern used primarily for problems involving arrays or strings. It converts a **brute-force O(N²)** solution into a **linear O(N)** solution by avoiding redundant recalculations.
 
-Imagine a window sliding over your data structure. As it moves, elements enter from the right and leave from the left. Instead of recalculating the entire window, we only update based on the incoming and outgoing elements.
+Many developers struggle with array and string problems—not because they are hard, but because they solve them the slow way.
 
-## The Theory
-At its core, the technique relies on two pointers:
-1. **Right Pointer (\`R\`)**: Expands the window to find a valid solution.
-2. **Left Pointer (\`L\`)**: Contracts the window to optimize the solution (e.g., minimize length) or restore validity.
+If you've ever written:
 
-### Types of Sliding Windows
-1. **Fixed Size**: The window size \`k\` is constant. We slide it one step at a time.
-   - *Example*: Maximum sum of a subarray of size \`k\`.
-2. **Dynamic Size**: The window grows and shrinks based on certain conditions.
-   - *Example*: Longest substring without repeating characters.
+- nested loops
+- recalculated sums repeatedly
+- or hit a TLE (Time Limit Exceeded) on LeetCode
 
-## Problem: Longest Substring Without Repeating Characters
+then the Sliding Window Technique is exactly what you need.
 
-**Problem Statement**: Given a string \`s\`, find the length of the longest substring without repeating characters.
+**Sliding Window is not a trick.**  
+It's a thinking pattern—one that converts brute-force solutions into optimal ones.
 
-### Brute Force Approach
-We could generate all substrings and check for duplicates.
-- **Time Complexity**: O(N³)
-- **Space Complexity**: O(min(N, M))
+## What Is the Sliding Window Technique?
 
-### Sliding Window Optimization
-We can do better. We use a \`Set\` to keep track of characters in the current window.
+Sliding Window is used when:
 
-\`\`\`typescript
-function lengthOfLongestSubstring(s: string): number {
-    let left = 0;
-    let maxLength = 0;
-    const charSet = new Set<string>();
+✅ You're dealing with arrays or strings  
+✅ You need information about a contiguous subarray or substring  
+✅ You want to reuse previous computation instead of recomputing
 
-    for (let right = 0; right < s.length; right++) {
-        // While duplicate exists, shrink window from left
-        while (charSet.has(s[right])) {
-            charSet.delete(s[left]);
-            left++;
-        }
-        
-        // Add new character and update max length
-        charSet.add(s[right]);
-        maxLength = Math.max(maxLength, right - left + 1);
+Instead of restarting work for every position, you:
+
+1. Expand the window
+2. Update the result
+3. Shrink the window when needed
+
+This reduces time complexity from **O(n²) to O(n)**.
+
+---
+
+## Types of Sliding Window
+
+There are two major types you must master.
+
+### 1. Fixed Size Sliding Window
+
+**When to Use**
+
+Window size \`k\` is given
+
+**Examples:**
+
+- Maximum sum subarray of size k
+- Average of subarrays
+- Count of fixed-length patterns
+
+**Example Problem**
+
+Find the maximum sum of a subarray of size \`k\`
+
+**Brute Force (Wrong Way)**
+
+\`\`\`java
+for (int i = 0; i <= n - k; i++) {
+    int sum = 0;
+    for (int j = i; j < i + k; j++) {
+        sum += arr[j];
     }
-
-    return maxLength;
 }
 \`\`\`
 
-## Analysis
-- **Time Complexity**: **O(N)**. Each character is added and removed at most once.
-- **Space Complexity**: **O(min(M, N))**, where M is the size of the charset/alphabet.
+⛔ O(n²)
 
-## When to Use It?
-Look for these clues in problem statements:
-- "Find the **longest/shortest** substring/subarray..."
-- "Find a substring/subarray of **size k**..."
-- Input is linear (Array, String, LinkedList).
-- Optimization goal (max sum, min length, etc.).
+**Optimized Sliding Window (Correct Way)**
 
-## Conclusion
-The Sliding Window pattern is essential for any developer preparing for technical interviews. It teaches you how to maintain state efficiently while traversing data.
+\`\`\`java
+int maxSum = 0, windowSum = 0;
+
+for (int i = 0; i < k; i++) {
+    windowSum += arr[i];
+}
+
+maxSum = windowSum;
+
+for (int i = k; i < arr.length; i++) {
+    windowSum += arr[i];      // add next element
+    windowSum -= arr[i - k];  // remove first element
+    maxSum = Math.max(maxSum, windowSum);
+}
+\`\`\`
+
+✅ O(n)  
+✅ No repeated computation
+
+---
+
+### 2. Variable Size Sliding Window
+
+**When to Use**
+
+- Window size is not fixed
+- You expand and shrink based on a condition
+
+**Examples:**
+
+- Longest substring without repeating characters
+- Smallest subarray with sum ≥ target
+- Longest substring with at most k distinct characters
+
+**Core Pattern (Very Important)**
+
+\`\`\`java
+int left = 0;
+
+for (int right = 0; right < n; right++) {
+    // expand window (include right)
+
+    while (condition is violated) {
+        // shrink window (exclude left)
+        left++;
+    }
+
+    // update answer
+}
+\`\`\`
+
+**Memorize this.**  
+Most sliding window problems follow this structure.
+
+---
+
+## Example: Longest Substring Without Repeating Characters
+
+**Problem**
+
+Given a string, find the length of the longest substring without repeating characters.
+
+**Approach**
+
+- Use a HashSet
+- Expand \`right\`
+- If duplicate found → shrink \`left\`
+
+**Code**
+
+\`\`\`java
+Set<Character> set = new HashSet<>();
+int left = 0, maxLen = 0;
+
+for (int right = 0; right < s.length(); right++) {
+    while (set.contains(s.charAt(right))) {
+        set.remove(s.charAt(left));
+        left++;
+    }
+    set.add(s.charAt(right));
+    maxLen = Math.max(maxLen, right - left + 1);
+}
+\`\`\`
+
+✅ Linear time  
+✅ Clean logic  
+✅ Interview-ready
+
+---
+
+## Sliding Window vs Two Pointers
+
+Many people confuse these.
+
+| Sliding Window | Two Pointers |
+|----------------|--------------|
+| Contiguous data | Can be non-contiguous |
+| Dynamic window | Independent movement |
+| Used for sums, counts | Used for comparisons |
+
+👉 **Sliding Window is actually a special case of Two Pointers.**
+
+---
+
+## Common Mistakes Developers Make
+
+❌ Forgetting to shrink the window  
+❌ Updating answer at the wrong time  
+❌ Using nested loops when a window is enough  
+❌ Not identifying whether the window is fixed or variable
+
+---
+
+## How to Identify Sliding Window Problems Quickly
+
+Ask yourself:
+
+1. Is the data **continuous**?
+2. Am I checking **subarrays or substrings**?
+3. Can I **reuse previous computation**?
+
+If yes → **Sliding Window.**
+
+---
+
+## Practice Problems (Must Do)
+
+Start in this order:
+
+1. Maximum Sum Subarray of Size K
+2. First Negative Number in Every Window
+3. Longest Substring Without Repeating Characters
+4. Minimum Window Substring
+5. Longest Subarray with Sum ≤ K
+
+---
+
+## Final Thoughts
+
+Sliding Window is not just an algorithmic technique—it's a **mindset shift**.
+
+Once you master it:
+
+✅ Your code becomes **faster**  
+✅ Your logic becomes **cleaner**  
+✅ Interviews become **easier**
+
+If brute force feels natural to you right now, that's okay.  
+Sliding Window is what comes after you stop thinking like a beginner.
+
+**Think in windows. Not loops.**
         `
     },
     {
