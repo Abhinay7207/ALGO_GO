@@ -9,6 +9,7 @@ import RoadmapDetail from './pages/RoadmapDetail';
 import Login from './pages/Login';
 import WriteBlog from './pages/WriteBlog';
 import Profile from './pages/Profile';
+import MyBlogs from './pages/MyBlogs';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/roadmap/:id" element={<RoadmapDetail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/write" element={<WriteBlog />} />
+          <Route path="/my-blogs" element={<MyBlogs />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<Home />} />
         </Routes>

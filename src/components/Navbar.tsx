@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, PenSquare, LogIn, LogOut, User } from 'lucide-react';
+import { Menu, X, PenSquare, LogIn, LogOut, User, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -82,6 +82,14 @@ const Navbar = () => {
                                             Write Blog
                                         </Link>
                                         <Link
+                                            to="/my-blogs"
+                                            className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition-colors text-gray-700 font-medium"
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            <BookOpen className="w-4 h-4" />
+                                            My Blogs
+                                        </Link>
+                                        <Link
                                             to="/profile"
                                             className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition-colors text-gray-700 font-medium"
                                             onClick={() => setIsOpen(false)}
@@ -156,12 +164,20 @@ const Navbar = () => {
                                         <PenSquare className="w-4 h-4 inline mr-2" />
                                         Write Blog
                                     </Link>
+                                    <Link
+                                        to="/my-blogs"
+                                        className="block w-full text-center mt-2 bg-white text-black font-bold py-3 rounded-lg border-2 border-black"
+                                        onClick={() => setIsOpen(false)}
+                                    >
+                                        <BookOpen className="w-4 h-4 inline mr-2" />
+                                        My Blogs
+                                    </Link>
                                     <button
                                         onClick={() => {
                                             handleLogout();
                                             setIsOpen(false);
                                         }}
-                                        className="block w-full text-center bg-white text-gray-700 font-bold py-3 rounded-lg border-2 border-black"
+                                        className="block w-full text-center mt-2 bg-white text-gray-700 font-bold py-3 rounded-lg border-2 border-black"
                                     >
                                         <LogOut className="w-4 h-4 inline mr-2" />
                                         Logout

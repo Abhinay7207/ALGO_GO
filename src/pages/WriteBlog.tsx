@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Navbar from '../components/Navbar';
 import Markdown from 'react-markdown';
@@ -9,6 +9,8 @@ import remarkGfm from 'remark-gfm';
 const WriteBlog = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const editId = searchParams.get('edit');
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -19,6 +21,25 @@ const WriteBlog = () => {
     const [error, setError] = useState('');
     const [showLangModal, setShowLangModal] = useState(false);
     const [selectedLang, setSelectedLang] = useState('python');
+    const [isEditMode, setIsEditMode] = useState(false);
+
+    // Load blog data if in edit mode
+    useEffect(() => {
+        if (editId) {
+            const userBlogs = JSON.parse(localStorage.getItem('userBlogs') || '[]');
+            const blogToEdit = userBlogs.find((blog: any) => blog.id === editId);
+
+            if (blogToEdit) {
+                setTitle(blogToEdit.title);
+                setDescription(blogToEdit.description);
+                setContent(blogToEdit.content);
+                setTags(blogToEdit.tags.join(', '));
+                setIsEditMode(true);
+            } else {
+                setError('Blog not found');
+            }
+        }
+    }, [editId]);
 
     const handlePublish = async () => {
         if (!user) {
@@ -36,25 +57,43 @@ const WriteBlog = () => {
 
         try {
             const tagsArray = tags.split(',').map(tag => tag.trim()).filter(Boolean);
-
-            // Mock blog storage in localStorage
             const existingBlogs = JSON.parse(localStorage.getItem('userBlogs') || '[]');
-            const newBlog = {
-                id: Math.random().toString(36).substr(2, 9),
-                title: title.trim(),
-                description: description.trim() || title.trim().substring(0, 150),
-                content: content.trim(),
-                tags: tagsArray,
-                author: user?.fullName || 'Anonymous',
-                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                readTime: `${Math.ceil(content.split(' ').length / 200)} min read`,
-            };
 
-            existingBlogs.push(newBlog);
-            localStorage.setItem('userBlogs', JSON.stringify(existingBlogs));
+            if (isEditMode && editId) {
+                // Update existing blog
+                const blogIndex = existingBlogs.findIndex((blog: any) => blog.id === editId);
+                if (blogIndex !== -1) {
+                    existingBlogs[blogIndex] = {
+                        ...existingBlogs[blogIndex],
+                        title: title.trim(),
+                        description: description.trim() || title.trim().substring(0, 150),
+                        content: content.trim(),
+                        tags: tagsArray,
+                        readTime: `${Math.ceil(content.split(' ').length / 200)} min read`,
+                    };
+                    localStorage.setItem('userBlogs', JSON.stringify(existingBlogs));
+                    alert('Blog updated successfully!');
+                    navigate('/my-blogs');
+                }
+            } else {
+                // Create new blog
+                const newBlog = {
+                    id: Math.random().toString(36).substr(2, 9),
+                    title: title.trim(),
+                    description: description.trim() || title.trim().substring(0, 150),
+                    content: content.trim(),
+                    tags: tagsArray,
+                    author: user?.fullName || 'Anonymous',
+                    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                    readTime: `${Math.ceil(content.split(' ').length / 200)} min read`,
+                };
 
-            alert('Blog published successfully! (Saved locally)');
-            navigate('/');
+                existingBlogs.push(newBlog);
+                localStorage.setItem('userBlogs', JSON.stringify(existingBlogs));
+
+                alert('Blog published successfully! (Saved locally)');
+                navigate('/my-blogs');
+            }
         } catch (err: any) {
             setError(err.message || 'Failed to publish blog');
         } finally {
@@ -73,8 +112,12 @@ const WriteBlog = () => {
 
             <div className="max-w-5xl mx-auto px-4 py-12">
                 <div className="mb-8">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Write Your Blog</h1>
-                    <p className="text-gray-600">Share your knowledge with the community</p>
+                    <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                        {isEditMode ? 'Edit Your Blog' : 'Write Your Blog'}
+                    </h1>
+                    <p className="text-gray-600">
+                        {isEditMode ? 'Update your blog post' : 'Share your knowledge with the community'}
+                    </p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -305,7 +348,7 @@ const WriteBlog = () => {
                         ) : (
                             <>
                                 <Send className="w-5 h-5" />
-                                Publish Blog
+                                {isEditMode ? 'Update Blog' : 'Publish Blog'}
                             </>
                         )}
                     </button>
@@ -322,8 +365,8 @@ const WriteBlog = () => {
                                         key={lang}
                                         onClick={() => setSelectedLang(lang)}
                                         className={`px-4 py-2 rounded-lg border-2 border-black font-medium transition-all ${selectedLang === lang
-                                                ? 'bg-primary text-white shadow-brutal-sm'
-                                                : 'bg-white hover:bg-gray-50'
+                                            ? 'bg-primary text-white shadow-brutal-sm'
+                                            : 'bg-white hover:bg-gray-50'
                                             }`}
                                     >
                                         {lang}
