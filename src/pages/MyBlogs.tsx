@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Navbar from '../components/Navbar';
-import { Edit, Trash2, Calendar, Clock, Tag } from 'lucide-react';
+import { Edit, Trash2, Calendar, Clock, Tag, BookOpen } from 'lucide-react';
 
 interface UserBlog {
     id: string;
@@ -132,6 +132,13 @@ const MyBlogs = () => {
                                 </div>
 
                                 <div className="flex gap-3">
+                                    <button
+                                        onClick={() => navigate(`/blogs/${blog.id}`)}
+                                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white text-gray-900 font-bold rounded-lg border-2 border-black shadow-brutal-sm hover:shadow-none transition-all hover:bg-gray-50"
+                                    >
+                                        <BookOpen className="w-4 h-4" />
+                                        Read
+                                    </button>
                                     <button
                                         onClick={() => handleEdit(blog.id)}
                                         className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white font-bold rounded-lg border-2 border-black shadow-brutal-sm hover:shadow-none transition-all"
