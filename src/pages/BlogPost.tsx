@@ -40,11 +40,10 @@ const BlogPost = () => {
 
     const fetchBlog = async () => {
         try {
-            // Find the static blog
+            // First check static blogs
             const staticBlog = staticBlogs.find(b => b.id === id);
 
             if (staticBlog) {
-                // Load likes from localStorage
                 const storedLikes = localStorage.getItem(`blog_likes_${id}`);
                 setBlog({
                     ...staticBlog,
@@ -54,6 +53,23 @@ const BlogPost = () => {
                     readTime: staticBlog.readTime,
                     date: staticBlog.date,
                     content: preprocessBlogContent(staticBlog.content)
+                } as BlogData);
+                return;
+            }
+
+            // If not found in static blogs, check user blogs
+            const userBlogs = JSON.parse(localStorage.getItem('userBlogs') || '[]');
+            const userBlog = userBlogs.find((b: any) => b.id === id);
+
+            if (userBlog) {
+                const storedLikes = localStorage.getItem(`blog_likes_${id}`);
+                setBlog({
+                    ...userBlog,
+                    likes: storedLikes ? parseInt(storedLikes) : 0,
+                    created_at: userBlog.date,
+                    author: { full_name: userBlog.author },
+                    // userBlog already has readTime and content
+                    content: preprocessBlogContent(userBlog.content)
                 } as BlogData);
             }
         } catch (error) {

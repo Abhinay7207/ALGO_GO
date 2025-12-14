@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { ArrowLeft, Search } from 'lucide-react';
 import Navbar from '../components/Navbar';
@@ -29,9 +29,15 @@ const AllBlogs = () => {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
+    const [allBlogs, setAllBlogs] = useState(blogs);
+
+    useEffect(() => {
+        const storedBlogs = JSON.parse(localStorage.getItem('userBlogs') || '[]');
+        setAllBlogs([...storedBlogs.reverse(), ...blogs]);
+    }, []);
 
     const filteredBlogs = useMemo(() => {
-        let result = blogs;
+        let result = allBlogs;
 
         // Filter by Category Tabs
         if (selectedCategory !== 'All') {
@@ -60,7 +66,7 @@ const AllBlogs = () => {
         }
 
         return result;
-    }, [topicsParam, searchQuery, selectedCategory]);
+    }, [topicsParam, searchQuery, selectedCategory, allBlogs]);
 
     const title = topicsParam
         ? `Blogs: ${topicsParam.split(',')[0]}`
@@ -86,8 +92,8 @@ const AllBlogs = () => {
                                 key={category}
                                 onClick={() => setSelectedCategory(category)}
                                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border-2 ${selectedCategory === category
-                                        ? 'bg-black text-white border-black'
-                                        : 'bg-white text-gray-600 border-gray-200 hover:border-black hover:text-black'
+                                    ? 'bg-black text-white border-black'
+                                    : 'bg-white text-gray-600 border-gray-200 hover:border-black hover:text-black'
                                     }`}
                             >
                                 {category}

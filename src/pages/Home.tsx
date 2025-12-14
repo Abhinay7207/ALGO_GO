@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import Hero from '../components/Hero';
 import ContentGrid from '../components/ContentGrid';
@@ -9,8 +9,18 @@ import { blogs as staticBlogs } from '../data/blogs';
 const Home = () => {
     const [searchQuery, setSearchQuery] = useState('');
 
-    // Use static blogs only
-    const allBlogs = staticBlogs;
+    const [allBlogs, setAllBlogs] = useState(staticBlogs);
+
+    useEffect(() => {
+        const fetchBlogs = () => {
+            const storedBlogs = JSON.parse(localStorage.getItem('userBlogs') || '[]');
+            // Combine static blogs and user blogs
+            // We can reverse storedBlogs to show newest first if they are appended
+            setAllBlogs([...storedBlogs.reverse(), ...staticBlogs]);
+        };
+
+        fetchBlogs();
+    }, []);
 
     const filteredBlogs = allBlogs.filter(blog =>
         blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
