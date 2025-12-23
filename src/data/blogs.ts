@@ -3015,9 +3015,9 @@ Most discussions focus on time complexity, but space is equally important in mem
 
 ### 1️⃣ O(1) — Constant Time
 Execution time does not depend on input size.
-\```java
+\`\`\`java
 int x = arr[0];
-\```
+\`\`\`
 - Fastest possible
 - Ideal but rare
 - 📌 **Example**: Accessing an array element
@@ -3031,11 +3031,11 @@ Input size reduces by half each step.
 
 ### 3️⃣ O(n) — Linear Time
 Time grows directly with input size.
-\```java
+\`\`\`java
 for (int i = 0; i < n; i++) {
     print(arr[i]);
 }
-\```
+\`\`\`
 - 📌 **Example**: Traversing an array
 
 ### 4️⃣ O(n log n) — Linearithmic Time
@@ -3047,10 +3047,10 @@ Combination of linear and logarithmic.
 
 ### 5️⃣ O(n²) — Quadratic Time
 Nested loops.
-\```java
+\`\`\`java
 for (i = 0 to n)
   for (j = 0 to n)
-\```
+\`\`\`
 - 📌 **Example**: Bubble Sort, Selection Sort
 - 📌 Becomes slow very quickly
 
@@ -3072,17 +3072,17 @@ O(5n + 20) → O(n)
 O(n² + n + 1) → O(n²)
 
 **Rule 3: Consecutive Loops → Add**
-\```java
+\`\`\`java
 for (...) → O(n)
 for (...) → O(n)
-\```
+\`\`\`
 Total → O(n + n) = O(n)
 
 **Rule 4: Nested Loops → Multiply**
-\```java
+\`\`\`java
 for (...)
   for (...)
-\```
+\`\`\`
 O(n × n) = O(n²)
 
 ## 7. Big-O of Common Data Structures
