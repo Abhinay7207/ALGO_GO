@@ -2940,27 +2940,198 @@ Once you go Typed, you never go back.
     },
     {
         id: '26',
-        title: 'Understanding Big O Notation',
-        description: 'Time and Space complexity basics. Why O(1) is better than O(n).',
+        title: 'Understanding Big-O Notation (In Depth, With Intuition)',
+        description: 'Learn why Big-O notation is about scalability, not milliseconds, and how to calculate it step-by-step.',
         type: 'blog',
         tags: ['DSA', 'Algorithms', 'Computer Science'],
         date: 'Jul 20, 2024',
-        readTime: '7 min read',
+        readTime: '12 min read',
         author: 'AlgoMaster',
         content: `
-# Understanding Big O Notation
+# Understanding Big-O Notation (In Depth, With Intuition)
 
-Big O measures how your code scales as input size (N) grows.
+When we write programs, we often ask questions like:
 
-## Common Complexities
-- **O(1)**: Constant time. Lookup in a Hash Map.
-- **O(log N)**: Logarithmic. Binary Search. Halving the search space.
-- **O(N)**: Linear. Iterating a list.
-- **O(N²)**: Quadratic. Nested loops. Bubble sort.
+- Is this code fast enough?
+- Will it work efficiently for large inputs?
+- Why does my solution pass small test cases but fail for large ones?
 
-## Why it matters?
-For N=10, O(N²) is 100. Fast.
-For N=100,000, O(N²) is 10,000,000,000. Your server crashes.
+The answer to all these questions usually lies in **Big-O Notation**.
+
+Big-O is not about writing faster code in milliseconds — it’s about how your algorithm **scales** as the input size grows.
+
+Let’s understand it step by step, from intuition to examples.
+
+## 1. What Is Big-O Notation?
+
+Big-O notation describes the time or space complexity of an algorithm as a function of input size **n**.
+
+In simple words:
+Big-O tells us how fast (or slow) an algorithm grows when the input becomes very large.
+
+It focuses on:
+- **Worst-case performance**
+- **Growth rate**, not exact time
+
+## 2. Why Do We Need Big-O?
+
+Imagine two algorithms:
+- **Algorithm A**: takes 1 second for 100 inputs
+- **Algorithm B**: takes 2 seconds for 100 inputs
+
+At first glance, A looks better.
+
+But:
+- **A** takes 10,000 seconds for 1,000,000 inputs
+- **B** takes 20 seconds for 1,000,000 inputs
+
+Now Algorithm B is clearly superior.
+
+👉 Big-O helps us predict this behavior before writing large systems.
+
+## 3. Big-O Ignores Constants (Important!)
+
+Big-O does not care about exact execution time.
+
+**Example:**
+- O(2n) → O(n)
+- O(100n) → O(n)
+- O(n + 5) → O(n)
+
+**Why?**
+Because when n is very large, constants become insignificant.
+
+## 4. Time Complexity vs Space Complexity
+
+### Time Complexity
+How much time an algorithm takes as input grows.
+
+### Space Complexity
+How much extra memory an algorithm uses.
+
+Most discussions focus on time complexity, but space is equally important in memory-constrained systems.
+
+## 5. Common Big-O Notations (From Best to Worst)
+
+### 1️⃣ O(1) — Constant Time
+Execution time does not depend on input size.
+\```java
+int x = arr[0];
+\```
+- Fastest possible
+- Ideal but rare
+- 📌 **Example**: Accessing an array element
+
+### 2️⃣ O(log n) — Logarithmic Time
+Input size reduces by half each step.
+- Binary Search
+- Extremely efficient
+- Used in sorted data structures
+- 📌 **Example**: Binary Search, Balanced BST
+
+### 3️⃣ O(n) — Linear Time
+Time grows directly with input size.
+\```java
+for (int i = 0; i < n; i++) {
+    print(arr[i]);
+}
+\```
+- 📌 **Example**: Traversing an array
+
+### 4️⃣ O(n log n) — Linearithmic Time
+Combination of linear and logarithmic.
+- Merge Sort
+- Quick Sort (average case)
+- 📌 Very efficient for large data
+- 📌 Common in optimal sorting algorithms
+
+### 5️⃣ O(n²) — Quadratic Time
+Nested loops.
+\```java
+for (i = 0 to n)
+  for (j = 0 to n)
+\```
+- 📌 **Example**: Bubble Sort, Selection Sort
+- 📌 Becomes slow very quickly
+
+### 6️⃣ O(2ⁿ) — Exponential Time
+Each input doubles the work.
+- 📌 **Example**: Recursive Fibonacci (naive)
+- ⚠️ Very dangerous for large n
+
+### 7️⃣ O(n!) — Factorial Time
+Worst possible growth.
+- 📌 **Example**: Brute-force Traveling Salesman
+
+## 6. How to Calculate Big-O (Step-by-Step)
+
+**Rule 1: Drop Constants**
+O(5n + 20) → O(n)
+
+**Rule 2: Keep the Highest Order Term**
+O(n² + n + 1) → O(n²)
+
+**Rule 3: Consecutive Loops → Add**
+\```java
+for (...) → O(n)
+for (...) → O(n)
+\```
+Total → O(n + n) = O(n)
+
+**Rule 4: Nested Loops → Multiply**
+\```java
+for (...)
+  for (...)
+\```
+O(n × n) = O(n²)
+
+## 7. Big-O of Common Data Structures
+
+| Data Structure | Access | Search | Insert | Delete |
+|----------------|--------|--------|--------|--------|
+| Array          | O(1)   | O(n)   | O(n)   | O(n)   |
+| Linked List    | O(n)   | O(n)   | O(1)   | O(1)   |
+| Stack          | O(n)   | O(n)   | O(1)   | O(1)   |
+| Queue          | O(n)   | O(n)   | O(1)   | O(1)   |
+| HashMap        | O(1)*  | O(1)*  | O(1)*  | O(1)*  |
+
+*\* Average case*
+
+## 8. Worst, Best & Average Case
+
+**Example**: Linear Search
+- **Best case**: Element at first position → O(1)
+- **Worst case**: Element at last position → O(n)
+- **Average case**: O(n)
+
+👉 Big-O always refers to worst case unless stated otherwise.
+
+## 9. Why Big-O Matters in Exams & Interviews
+
+- GATE questions directly ask complexity
+- Coding interviews reject inefficient solutions
+- Competitive programming has strict time limits
+
+**Example:**
+A solution with O(n²) will TLE (Time Limit Exceeded) for n = 10⁵.
+
+## 10. Real-World Analogy
+
+Think of searching a name in a phone book:
+- Checking one page → O(1)
+- Checking each name → O(n)
+- Splitting the book in half each time → O(log n)
+
+Big-O is just measuring how smart your approach is.
+
+## 11. Final Takeaway
+
+- Big-O is about scalability, not speed
+- Focus on growth rate
+- Always aim for: O(log n), O(n), or O(n log n)
+- Avoid: O(n²), O(2ⁿ), O(n!)
+
+> “A correct but slow algorithm is still a bad algorithm.”
         `
     },
     {
