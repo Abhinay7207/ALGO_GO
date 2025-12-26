@@ -29,3 +29,25 @@ export function preprocessBlogContent(content: string): string {
         return `\`\`\`multilang\n${json}\n\`\`\``;
     });
 }
+
+export interface Heading {
+    id: string;
+    text: string;
+    level: number;
+}
+
+export function extractHeadings(content: string): Heading[] {
+    const headingRegex = /^(#{2,3})\s+(.+)$/gm;
+    const headings: Heading[] = [];
+    let match;
+
+    while ((match = headingRegex.exec(content)) !== null) {
+        headings.push({
+            id: match[2].toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-'),
+            text: match[2],
+            level: match[1].length
+        });
+    }
+
+    return headings;
+}
